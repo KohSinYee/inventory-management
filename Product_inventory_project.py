@@ -17,19 +17,17 @@ class Inventory:
     def __init__(self):
         self.records = {}       # id --> Product
 
-    def add(self, ID, name):
-        self.records[ID] = name
+    def add(self, ID, product):
+        self.records[ID] = product
 
-    def add_new_product(self,name, price, quantity):
-        global current_ID
-        current_ID = current_ID + 1                                         # generate id
-        name = Product(current_ID,name, price,quantity)                     # generate new product
-        self.add (current_ID, name)
-        return current_ID
-        return name
+    def add_new_product(self, name, price, quantity):
+        new_ID = len(self.records)                                      # generate id
+        new_product = Product(new_ID, name, price,quantity)                     # generate new product
+        self.add (new_ID, new_product)
+        return new_ID
 
-    def add_quantity (self, ID,name, quantity):
-        if ID == False:
+    def add_quantity (self, ID, name, quantity):
+        if ID not in self.records:
             print ("ID is not found, please add new product.")
         else:
             self.records[ID].quantity = int(self.records[ID].quantity) + int(quantity)                #update new quantity
@@ -54,30 +52,28 @@ if 'inventory' in storage:
 else:
     inventory = Inventory()
 
-current_ID = len(inventory.records)
-
 while True:
-    
+
     print("Functions:\n1) Add New Product\n2) Update quantity\n3) Update Price\n4) Summary")
     x = int(input())
 
     if x == 1:
-        print("Please enter name,price and quantity in order (with comma).")
+        print("Please enter name,price and quantity (whole number) in order, separated with commas.")
         y = input()
         y = y.split(",")
-        inventory.add_new_product(y[0],y[1],y[2])
+        inventory.add_new_product(y[0],float(y[1]),int(y[2]))
 
     if x == 2:
         print("Please enter ID,name,changes in order (with comma).")
         y = input()
         y = y.split(",")
-        inventory.add_quantity(y[0],y[1],y[2])
+        inventory.add_quantity(int(y[0]),y[1],int(y[2]))
 
     if x == 3:
-        print("Please enter name,updated price (with comma).")
+        print("Please enter id, name,updated price (with comma).")
         y = input()
         y = y.split(",")
-        inventory.change_price (y[0],y[1],y[2])
+        inventory.change_price(int(y[0]),y[1],float(y[2]))
 
     if x == 4:
         inventory.summary()
@@ -86,7 +82,8 @@ while True:
     z = input()
     if z.lower() != 'y':
         break
-    
+
+storage['inventory'] = inventory
 storage.close()
 
 #check ID to name
